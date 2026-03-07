@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head> 
+    <meta charset="UTF-8">
+    <title>Main page</title>
+</head>
+<body>
+    <form method="post">
+        <input name='username' placeholder='username'></input>
+        <button>fetch</button><br>
+        {% if returnedName %}
+        user - {{ returnedName[1] }}<br>
+        pass - {{ returnedName[2] }}<br>
+        id - {{ returnedName[0] }}
+        {% else %}
+        user not found
+        {% endif %}
+    </form>
+    <form method="post">
+        <input placeholder='username' name='makeUser' ></input>
+        <input name='makepassword' placeholder='password'></input>
+        <button>make</button>
+    </form>
+
+</body>
+</html>
