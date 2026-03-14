@@ -4,19 +4,19 @@
 import sqlite3
 
 
-# con = sqlite3.connect("test.db")
+con = sqlite3.connect("test.db")
 
 
-# cur = con.cursor()
+cur = con.cursor()
 
 
 
-# cur.execute("""CREATE TABLE IF NOT EXISTS User(
-#     id INTEGER PRIMARY KEY,
-#     username TEXT NOT NUll,
-#     password TEXT NOT NUll
-# )""")
-# con.commit()
+cur.execute("""CREATE TABLE IF NOT EXISTS User(
+     id INTEGER PRIMARY KEY,
+     username TEXT NOT NULL,
+     password TEXT NOT NULL 
+ )""")
+con.commit()
 
 
 def addNewUser(username, password):
