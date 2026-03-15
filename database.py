@@ -31,7 +31,7 @@ def init_db():
     )""")
     
     Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('admin')")
-    Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('member')")
+    # rework soon Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('member')")
     Con.commit()
     Con.close()
 
@@ -48,6 +48,20 @@ def AddNewUser(Username, Password):
         return 1
     finally:
         Con.close()
+
+def FetchUserRoles(Username):                                          # defining a user's name in their role
+    Con = get_connection()
+    Cur = Con.cursor()
+    Cur.execute("""
+        SELECT Roles.RoleName
+        FROM User
+        JOIN UserRoles ON User.id = UserRoles.userId
+        JOIN Roles ON Roles.id = UserRoles.roleId
+        WHERE User.username = ?
+    """, (Username,))
+    rows = Cur.fetchall()
+    Con.close()
+    return [row[0] for row in rows]
 
 def FetchUsers(Username):
     Con = get_connection()
