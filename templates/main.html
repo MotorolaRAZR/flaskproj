@@ -5,7 +5,7 @@
     <title>Main page</title>
 </head>
 <body>
-    {% if roleCheck == admin %}
+    {% if 'admin' in roles %}
         <form method="post">
             <input name='username' placeholder='username'></input>
             <button>fetch</button><br>
@@ -13,6 +13,7 @@
             user - {{ returnedName[1] }}<br>
             pass - {{ returnedName[2] }}<br>
             id - {{ returnedName[0] }}
+            role - {{ returnedName[3] | join(', ') }}
             {% else %}
             user not found
             {% endif %}
@@ -27,7 +28,8 @@
     {% endif %}
     <form method="get">
         {% if loggedIn %}
-        logged in as {{ loggedIn }}
+        logged in as {{ loggedIn }}<br>
+        Roles: {{ roles | join(', ') }}
         {% else %}
         user with such credentials not found
         {% endif %} 

@@ -54,8 +54,12 @@ def FetchUsers(Username):
     Cur = Con.cursor()
     Cur.execute("SELECT * FROM User WHERE username = ?", (Username,))
     User = Cur.fetchone()
+    if User:
+        roles = FetchUserRoles(Username)
+        Con.close()
+        return (User[0], User[1], User[2], roles)
     Con.close()
-    return User
+    return None
 
 def FetchUserRoles(Username):                                          # defining a user's name in their role
     Con = get_connection()

@@ -15,8 +15,8 @@ database.AssignRole("admin", "admin")       # created an admin role XD
 def main():
     returnvalue = ""
     logged = flask.session.get('username')
-    roles = flask.session.get('roles', [])
-
+    roles = database.FetchUserRoles(logged)
+    print(roles)
     if flask.request.method == "POST":
         if 'username' in flask.request.form:
             inputfromUser = flask.request.form['username']
@@ -31,7 +31,7 @@ def main():
             database.AddNewUser(name2Create, pass2Create)
             database.AssignRole(name2Create, role)
 
-        return flask.render_template("main.html", loggedIn=logged, roles=roles, returnedName=returnvalue)
+        return flask.render_template("main.html", loggedIn=logged, returnedName=returnvalue, roles=roles)
 
     # GET method
     return flask.render_template("main.html", loggedIn=logged, roles=roles, returnedName=returnvalue)
