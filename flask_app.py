@@ -2,7 +2,7 @@ import flask
 import database
 import os
 import secrets
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 
 app = flask.Flask('__main__')
 app.secret_key = secrets.token_hex(16)
@@ -19,15 +19,15 @@ def main():
         else:
             returnvalue = ""
 
-        if "makeUser" in flask.request.form and "makepassword" in flask.request.form:
+        if "makeUser" in flask.request.form and "makepassword" in flask.request.form and "role" in flask.request.form:
             name2Create = flask.request.form['makeUser']
             pass2Create = flask.request.form['makepassword']
-            hashed = generate_password_hash(pass2Create)
-            database.addNewUser(name2Create, hashed)
-
+            role = flask.request.form['role']
+            database.AddNewUser(name2Create, pass2Create)
+        
         return flask.render_template("main.html", returnedName=returnvalue) # if creation succeeds
 
-    return flask.render_template("main.html", loggedIn=flask.session.get('username') )
+    return flask.render_template("main.html", loggedIn=flask.session.get('username'), roleCheck=flask.session.get('role'))
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -35,8 +35,8 @@ def login():
         username = flask.request.form['username']
         password = flask.request.form['password']
 
-        answer = database.fetchUsers(username)
-
+        answer = database.FetchUsers(username)
+        print(answer)
         if answer != None:
             if answer[1] == username and check_password_hash(answer[2], password):
                 flask.session['username'] = username
