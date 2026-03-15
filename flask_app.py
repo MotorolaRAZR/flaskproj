@@ -7,15 +7,20 @@ from werkzeug.security import check_password_hash
 app = flask.Flask('__main__')
 app.secret_key = secrets.token_hex(16)
 
+database.init_db()
+database.AddNewUser("admin", "admin")
+database.AssignRole("admin", "admin")       # created an admin role XD
+
 @app.route("/", methods=['POST', "GET"])
 def main():
     returnvalue = ""
-    logged = None
+    logged = flask.session.get('username')
+    roles = flask.session.get('roles', [])
 
     if flask.request.method == "POST":
         if 'username' in flask.request.form:
             inputfromUser = flask.request.form['username']
-            returnvalue = database.fetchUsers(inputfromUser)
+            returnvalue = database.FetchUsers(inputfromUser)
         else:
             returnvalue = ""
 
@@ -24,10 +29,12 @@ def main():
             pass2Create = flask.request.form['makepassword']
             role = flask.request.form['role']
             database.AddNewUser(name2Create, pass2Create)
-        
-        return flask.render_template("main.html", returnedName=returnvalue) # if creation succeeds
+            database.AssignRole(name2Create, role)
 
-    return flask.render_template("main.html", loggedIn=flask.session.get('username'), roleCheck=flask.session.get('role'))
+        return flask.render_template("main.html", loggedIn=logged, roles=roles, returnedName=returnvalue)
+
+    # GET method
+    return flask.render_template("main.html", loggedIn=logged, roles=roles, returnedName=returnvalue)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -39,7 +46,8 @@ def login():
         print(answer)
         if answer != None:
             if answer[1] == username and check_password_hash(answer[2], password):
-                flask.session['username'] = username
+                flask.session['username'] = username                                # put username into username
+                flask.session['roles'] = database.FetchUserRoles(username)          # put roles into the session
                 return flask.redirect(flask.url_for("main"))
     print(flask.session)
     return flask.render_template("login.html", loggedIn=flask.session.get('username'))
@@ -48,6 +56,7 @@ def login():
 def logout():
     if flask.request.method == "POST":
         flask.session.pop('username', None)
-    return flask.redirect(flask.url_for("static", filename="main.html"))
+        flask.session.pop('roles', None)
+    return flask.redirect(flask.url_for("login"))
 
 app.run(debug=True)
