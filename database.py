@@ -29,8 +29,9 @@ def init_db():
         FOREIGN KEY (userId) REFERENCES User (id),
         FOREIGN KEY (roleId) REFERENCES Roles (id)
     )""")
-
+    
     Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('admin')")
+    Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('member')")
     Con.commit()
     Con.close()
 
@@ -59,6 +60,7 @@ def FetchUsers(Username):
 def FetchUserRoles(Username):                                          # defining a user's name in their role
     Con = get_connection()
     Cur = Con.cursor()
+    print(f"Find roles for users: {Username}")
     Cur.execute("""
         SELECT Roles.RoleName
         FROM User
@@ -67,6 +69,8 @@ def FetchUserRoles(Username):                                          # definin
         WHERE User.username = ?
     """, (Username,))
     rows = Cur.fetchall()
+    print(f"Find roles: {len(rows)}")
+    print(f"Roles: {rows}")
     Con.close()
     return [row[0] for row in rows]
 
