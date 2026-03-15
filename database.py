@@ -61,24 +61,6 @@ def FetchUsers(Username):
     Con.close()
     return None
 
-def FetchUserRoles(Username):                                          # defining a user's name in their role
-    Con = get_connection()
-    Cur = Con.cursor()
-    print(f"Find roles for users: {Username}")
-    Cur.execute("""
-        SELECT Roles.RoleName
-        FROM User
-        JOIN UserRoles ON User.id = UserRoles.userId
-        JOIN Roles ON Roles.id = UserRoles.roleId
-        WHERE User.username = ?
-    """, (Username,))
-    rows = Cur.fetchall()
-    print(f"Find roles: {len(rows)}")
-    print(f"Roles: {rows}")
-    Con.close()
-    return [row[0] for row in rows]
-
-
 def AssignRole(UserName, RoleName):
     Con = get_connection()
     Cur = Con.cursor()
