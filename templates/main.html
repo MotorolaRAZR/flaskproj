@@ -5,7 +5,7 @@
     <title>Main page</title>
 </head>
 <body>
-    {% if loggedIn == admin %}
+    {% if roleCheck == admin %}
         <form method="post">
             <input name='username' placeholder='username'></input>
             <button>fetch</button><br>
@@ -21,6 +21,7 @@
         <form method="post">
             <input placeholder='username' name='makeUser' ></input>
             <input name='makepassword' placeholder='password'></input>
+            <input name='role' placeholder='member'></input>
             <button>make</button>
         </form>
     {% endif %}
