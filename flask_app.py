@@ -10,12 +10,13 @@ app.secret_key = secrets.token_hex(16)
 @app.route("/", methods=['POST', "GET"])
 def main():
     returnvalue = ""
-    logged = None
+    logged = flask.session.get('username') 
+    roles = database.FetchUserRoles(logged)
 
     if flask.request.method == "POST":
         if 'username' in flask.request.form:
             inputfromUser = flask.request.form['username']
-            returnvalue = database.fetchUsers(inputfromUser)
+            returnvalue = database.FetchUsers(inputfromUser)
         else:
             returnvalue = ""
 
@@ -26,10 +27,10 @@ def main():
             database.AddNewUser(name2Create, pass2Create)
             database.AssignRole(name2Create, role)
 
-        return flask.render_template("main.html", loggedInAs=logged, returnedName=returnvalue, roles=roles)
+        return flask.render_template("main.html", loggedIn=logged, returnedName=returnvalue, roles=roles)
 
     # another return if other one fails when we create user
-    return flask.render_template("main.html", loggedInAs=logged, roles=roles, returnedName=returnvalue)
+    return flask.render_template("main.html", loggedIn=logged, roles=roles, returnedName=returnvalue)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
