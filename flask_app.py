@@ -24,30 +24,41 @@ def main():
             pass2Create = flask.request.form['makepassword']
             role = flask.request.form['role']
             database.AddNewUser(name2Create, pass2Create)
-        
-        return flask.render_template("main.html", returnedName=returnvalue) # if creation succeeds
+            database.AssignRole(name2Create, role)
 
-    return flask.render_template("main.html", loggedIn=flask.session.get('username'), roleCheck=flask.session.get('role'))
+        return flask.render_template("main.html", loggedInAs=logged, returnedName=returnvalue, roles=roles)
+
+    # another return if other one fails when we create user
+    return flask.render_template("main.html", loggedInAs=logged, roles=roles, returnedName=returnvalue)
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    sesh = flask.session
     if flask.request.method == "POST":
-        username = flask.request.form['username']
-        password = flask.request.form['password']
-
-        answer = database.FetchUsers(username)
-        print(answer)
-        if answer != None:
-            if answer[1] == username and check_password_hash(answer[2], password):
-                flask.session['username'] = username
-                return flask.redirect(flask.url_for("main"))
+        if 'username' in flask.request.form and 'password' in flask.request.form:
+            username = flask.request.form['username']
+            password = flask.request.form['password']
+            answer = database.FetchUsers(username)
+            print(answer)
+            if answer != None:
+                if answer[1] == username and check_password_hash(answer[2], password):
+                    flask.session['username'] = username                                # put username into username
+                    flask.session['roles'] = database.FetchUserRoles(username)          # put roles into the session
+                    return flask.redirect(flask.url_for("main"))
+        else:
+            pass
+        if 'logout' in flask.request.form:
+            print("aaaaa")
+            return flask.redirect("/logout")
     print(flask.session)
-    return flask.render_template("login.html", loggedIn=flask.session.get('username'))
+    return flask.render_template("login.html", session=sesh)
 
 @app.route("/logout", methods=['POST', 'GET'])
 def logout():
-    if flask.request.method == "POST":
+    if flask.request.method == "GET":
         flask.session.pop('username', None)
-    return flask.redirect(flask.url_for("static", filename="main.html"))
+        flask.session.pop('roles', None)
+        flask.session.clear()
+    return flask.redirect(flask.url_for("main"))
 
 app.run(debug=True)
