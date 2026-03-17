@@ -62,4 +62,6 @@ def logout():
         flask.session.clear()
     return flask.redirect(flask.url_for("main"))
 
+# TODO MAYBE ADD WEBSOCKET CHATROOM
+
 app.run(debug=True)
