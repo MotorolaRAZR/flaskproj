@@ -70,8 +70,6 @@ def login():
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if flask.request.method == "GET":
-        flask.session.pop("username", None)
-        flask.session.pop("roles", None)
         flask.session.clear()
     return flask.redirect(flask.url_for("main"))
 
