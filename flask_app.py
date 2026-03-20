@@ -90,4 +90,4 @@ def chatroom():
 
 # TODo MAYBE ADD WEBSOCKET CHATROOM
 
-# app.run(debug=True)
+app.run(debug=True)
