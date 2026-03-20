@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Chatroom</title>
+    <style>
+        .messages { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto; margin: 10px 0; background: #f9f9f9; }
+        .msg-row { display: flex; justify-content: flex-start; gap: 1cm; align-items: center; padding: 5px 0; }
+        .msg-right { margin-left: auto; }
+        .your-msg { font-weight: bold; }
+    </style>
+    </head>
+    <body>
+    {% if logged %}
+        <h1>Chatroom</h1>
+        <p>Welcome, <strong>{{ logged }}</strong></p>
+
+        <div class="messages">
+            {% if messages %}
+                {% for username, message, timestamp in messages %}
+                    {% if username == logged %}
+                        <div class="msg-row your-msg">
+                            <span>{{ username }}:</span>
+                            <span>{{ message }}</span>
+                            <span class="msg-right">{{ timestamp }}</span>
+                        </div>
+                    {% else %}
+                        <div class="msg-row">
+                            <span>{{ username }}:</span>
+                            <span>{{ message }}</span>
+                            <span class="msg-right">{{ timestamp }}</span>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <p>No messages yet.</p>
+            {% endif %}
+        </div>
+
+        <form method="post">
+            <input type="text" name="message" placeholder="Type message..." required>
+            <button type="submit">Send</button>
+        </form>
+        
+        <a href="{{ url_for('main') }}">Back to Main</a>
+    {% endif %}
+    </body>
+
+# NOTE: this entire shit was vibecoded idgaf doing this html bs

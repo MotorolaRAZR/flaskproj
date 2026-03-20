@@ -4,7 +4,7 @@ import os
 import secrets
 from werkzeug.security import check_password_hash
 
-app = flask.Flask("__main__")
+app = flask.Flask("__name__")
 app.secret_key = secrets.token_hex(16)
 
 
@@ -74,6 +74,20 @@ def logout():
     return flask.redirect(flask.url_for("main"))
 
 
+@app.route("/chatroom", methods=["POST", "GET"])
+def chatroom():
+    username = flask.session.get("username")
+    if not username:
+        return flask.redirect(flask.url_for("login"))
+
+    if flask.request.method == "POST":
+        message = flask.request.form["message"]
+        database.WriteMessage(username, message)
+
+    messages = database.FetchMessages()
+    return flask.render_template("chatroom.html", logged=username, messages=messages)
+
+
 # TODo MAYBE ADD WEBSOCKET CHATROOM
 
-app.run(debug=True)
+# app.run(debug=True)
