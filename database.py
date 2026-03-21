@@ -48,6 +48,17 @@ def init_db():
     )"""
     )
 
+    Cur.execute(
+        """CREATE TABLE IF NOT EXISTS News(
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        username TEXT NOT NULL,
+        content TEXT NOT NULL,
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (username) REFERENCES User (username)
+    )"""
+    )
+
     Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('admin')")
     # rework soon Cur.execute("INSERT OR IGNORE INTO Roles (RoleName) VALUES ('member')")
     Con.commit()
@@ -155,7 +166,35 @@ def FetchMessages(LIMIT=50):
     return reversed(messages)  # chronoligcal order since fuck u timestamps
 
 
-# init_db()
+def WriteNews(title, username, content):
+    Con = get_connection()
+    Cur = Con.cursor()
+    try:
+        Cur.execute(
+            "INSERT INTO News(title, username, content) VALUES(?, ?, ?)",
+            (title, username, content),
+        )
+        Con.commit()
+    except sqlite3.Error as Error:
+        print(f"Error: {Error}")
+    finally:
+        Con.close()
+
+
+def FetchNews(LIMIT=10):
+    Con = get_connection()
+    Cur = Con.cursor()
+    try:
+        Cur.execute("SELECT * FROM News ORDER BY timestamp DESC LIMIT ?", (LIMIT,))
+        news = Cur.fetchall()
+    except sqlite3.Error as Error:
+        print(f"Error: {Error}")
+    finally:
+        Con.close()
+    return reversed(news)
+
+
+init_db()
 AddNewUser("admin", "admin")
 AssignRole("admin", "admin")
 # fetchUsers("asf")

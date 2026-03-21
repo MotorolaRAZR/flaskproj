@@ -87,7 +87,31 @@ def chatroom():
     messages = database.FetchMessages()
     return flask.render_template("chatroom.html", logged=username, messages=messages)
 
+    # TODO: Apache With Conduit Matrix Server
 
-# TODo MAYBE ADD WEBSOCKET CHATROOM
+
+@app.route("/news", methods=["POST", "GET"])
+def displaynews():
+    username = flask.session.get("username")
+    news = database.FetchNews()
+    fetchroles = database.FetchUserRoles(username)
+    if flask.request.method == "POST":
+        if "title" in flask.request.form and "content" in flask.request.form:
+            title = flask.request.form["title"]
+            content = flask.request.form["content"]
+            database.WriteNews(title, username, content)
+            news = database.FetchNews()  # Rfetch after sending
+
+    if flask.request.method == "GET":
+        return flask.render_template(
+            "news_page.html", logged=username, news=news, roles=fetchroles
+        )
+
+    if not username:
+        return flask.redirect(flask.url_for("login"))
+    return flask.render_template(
+        "news_page.html", logged=username, news=news, roles=fetchroles
+    )
+
 
 app.run(debug=True)
