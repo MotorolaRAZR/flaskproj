@@ -115,3 +115,6 @@ def displaynews():
 
 
 app.run(debug=True)
+
+
+# TODO: HTML REFRACTOR + CSS DESIGN(ITS IN THE TELE GROUP)
