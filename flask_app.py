@@ -92,27 +92,30 @@ def chatroom():
 
 @app.route("/news", methods=["POST", "GET"])
 def displaynews():
-    username = flask.session.get("username")
-    news = database.FetchNews()
-    fetchroles = database.FetchUserRoles(username)
-    if flask.request.method == "POST":
-        if "title" in flask.request.form and "content" in flask.request.form:
-            title = flask.request.form["title"]
-            content = flask.request.form["content"]
-            database.WriteNews(title, username, content)
-            news = database.FetchNews()  # Rfetch after sending
-
-    if flask.request.method == "GET":
-        return flask.render_template(
-            "news_page.html", logged=username, news=news, roles=fetchroles
-        )
-
-    if not username:
+    username = flask.session.get("username")  # Получаем из сессии
+    if not username:  # Защита
         return flask.redirect(flask.url_for("login"))
-    return flask.render_template(
-        "news_page.html", logged=username, news=news, roles=fetchroles
-    )
+    news = database.FetchNews()
+    roles = database.FetchUserRoles(username)
+    if flask.request.method == "POST":
+        title = flask.request.form.get("title")
+        content = flask.request.form.get("content")
+        if title and content:
+            database.WriteNews(title, username, content)
+            flask.flash("Новость опубликована!")
+            news = database.FetchNews()
+    
+    return flask.render_template("news_page.html", logged=username, news=news, roles=roles)
 
+@app.context_processor
+def inject_user_info():
+    return {
+        'logged': flask.session.get('username'),
+        'roles': flask.session.get('roles', [])
+    }
+@app.before_request
+def log_session():
+    print(f"REQUEST {flask.request.path}: session.username={flask.session.get('username')}")
 
 app.run(debug=True)
 

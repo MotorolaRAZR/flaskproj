@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+<h1>Новости</h1>
+
+<!-- Форма для авторизованных -->
+{% if session.username or logged %}
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5>Добавить новость ({{ session.username or logged }})</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            <div class="mb-3">
+                <input name="title" class="form-control" placeholder="Заголовок" required>
+            </div>
+            <div class="mb-3">
+                <textarea name="content" class="form-control" rows="3" placeholder="Текст новости..." required></textarea>
+            </div>
+            <button class="btn btn-success">Опубликовать</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-warning">
+    <a href="{{ url_for('login') }}">Войдите</a> чтобы публиковать новости
+</div>
+{% endif %}
+
+<!-- Список новостей -->
+<div class="row">
+    {% for item in news %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5>{{ item[1] }}</h5>
+                <p>{{ item[3] }}</p>
+                <small class="text-muted">Автор: {{ item[2] }} • {{ item[4] }}</small>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12"><p class="text-muted">Нет новостей.</p></div>
+    {% endfor %}
+</div>
+<a href="{{ url_for('main') }}" class="btn btn-outline-primary mt-3">← Главная</a>
+{% endblock %}
