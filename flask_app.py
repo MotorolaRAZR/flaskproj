@@ -13,6 +13,7 @@ def main():
     returnvalue = ""
     logged = flask.session.get("username")
     roles = database.FetchUserRoles(logged)
+    userslist = database.FetchAllUsers()
 
     if flask.request.method == "POST":
         if "username" in flask.request.form:
@@ -33,12 +34,20 @@ def main():
             database.AssignRole(name2Create, role)
 
         return flask.render_template(
-            "main.html", loggedIn=logged, returnedName=returnvalue, roles=roles
+            "main.html",
+            loggedIn=logged,
+            returnedName=returnvalue,
+            roles=roles,
+            allusers=userslist,
         )
 
     # another return if other one fails when we create user
     return flask.render_template(
-        "main.html", loggedIn=logged, roles=roles, returnedName=returnvalue
+        "main.html",
+        loggedIn=logged,
+        roles=roles,
+        returnedName=returnvalue,
+        allusers=userslist,
     )
 
 
@@ -104,18 +113,26 @@ def displaynews():
             database.WriteNews(title, username, content)
             flask.flash("Новость опубликована!")
             news = database.FetchNews()
-    
-    return flask.render_template("news_page.html", logged=username, news=news, roles=roles)
+
+    return flask.render_template(
+        "news_page.html", logged=username, news=news, roles=roles
+    )
+
 
 @app.context_processor
 def inject_user_info():
     return {
-        'logged': flask.session.get('username'),
-        'roles': flask.session.get('roles', [])
+        "logged": flask.session.get("username"),
+        "roles": flask.session.get("roles", []),
     }
+
+
 @app.before_request
 def log_session():
-    print(f"REQUEST {flask.request.path}: session.username={flask.session.get('username')}")
+    print(
+        f"REQUEST {flask.request.path}: session.username={flask.session.get('username')}"
+    )
+
 
 app.run(debug=True)
 

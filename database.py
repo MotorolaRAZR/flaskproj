@@ -112,6 +112,22 @@ def FetchUsers(Username):
     return None
 
 
+def FetchAllUsers():
+    Con = get_connection()
+    Cur = Con.cursor()
+    Cur.execute("SELECT * From User")
+    Users = Cur.fetchall()
+    Con.close()
+    if Users:
+        result = []
+        for User in Users:
+            id, username, password = User
+            roles = FetchUserRoles(username)
+            result.append((id, username, password, roles))
+        return result
+    return None
+
+
 def AssignRole(UserName, RoleName):
     Con = get_connection()
     Cur = Con.cursor()
