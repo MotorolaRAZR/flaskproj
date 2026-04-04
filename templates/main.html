@@ -34,7 +34,7 @@
                 <tr>
                     <th>{{ user[0] }}</th>
                     <th>{{ user[1] }}</th>
-                    <th>{{ user[3] }}</th>
+                    <th>{{ user[3] | join(', ') }}</th>
                 </tr>
                 {% endfor %}
             </tbody>
